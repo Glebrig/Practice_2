@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карта</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.2.2/ol.css">
+    <style>
+        #map {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+     <div style="display: none">
+        <div id="popup" class="popup">
+            <p>Координаты</p>
+            <p><span id="coordinates"></span></p>
+        </div>
+    </div>
+    <script type="module" src="main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ol@v9.2.2/dist/ol.js"></script>
+    <script>
+        const map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                })
+            ],
+            view: new ol.View({
+                center: ol.proj.fromLonLat([36.2754, 54.5293 ]),
+                zoom: 10
+            })
+        });
+    </script>
+</body>
+</html>
