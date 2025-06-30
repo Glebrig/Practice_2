@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Практика</title>
-    <link rel="stylesheet" href="styles.css"> 
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Практика</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <h1> Добро пожаловать! </h1>
-    <div>
-        <button id="go_map">Перейти к карте</button>
-    </div>
-    <script type="module" src="main.js"></script>
+  <h1>Добро пожаловать!</h1>
+  <div>
+    <button id="go_map">Перейти к карте</button>
+  </div>
+
+  <script>
+    document.getElementById("go_map").addEventListener("click", () => {
+      window.location.href = "map.html";
+    });
+  </script>
 </body>
 </html>

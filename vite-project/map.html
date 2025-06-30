@@ -10,14 +10,20 @@
             width: 100vw;
             height: 100vh;
         }
+
+        .coord{
+            color: black;
+            border: 2px solid;
+            background-color: aquamarine;
+        }
     </style>
 </head>
 <body>
     <div id="map"></div>
      <div style="display: none">
         <div id="popup" class="popup">
-            <p>Координаты</p>
-            <p><span id="coordinates"></span></p>
+            <p class="coord">Координаты</p>
+            <p class="coord"><span id="coordinates"></span></p>
         </div>
     </div>
     <script type="module" src="main.js"></script>
