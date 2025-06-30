@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Карта</title>
+    <link rel="icon" type="image/x-icon" href="icon.ico">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.2.2/ol.css">
     <style>
         #map {
@@ -13,8 +14,10 @@
 
         .coord{
             color: black;
-            border: 2px solid;
+            border: 1px solid;
             background-color: aquamarine;
+            font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            font-size: small;
         }
     </style>
 </head>
@@ -28,19 +31,5 @@
     </div>
     <script type="module" src="main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ol@v9.2.2/dist/ol.js"></script>
-    <script>
-        const map = new ol.Map({
-            target: 'map',
-            layers: [
-                new ol.layer.Tile({
-                    source: new ol.source.OSM()
-                })
-            ],
-            view: new ol.View({
-                center: ol.proj.fromLonLat([36.2754, 54.5293 ]),
-                zoom: 10
-            })
-        });
-    </script>
 </body>
 </html>
