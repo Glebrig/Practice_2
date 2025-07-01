@@ -6,30 +6,26 @@
     <title>Карта</title>
     <link rel="icon" type="image/x-icon" href="icon.ico">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.2.2/ol.css">
-    <style>
-        #map {
-            width: 100vw;
-            height: 100vh;
-        }
-
-        .coord{
-            color: black;
-            border: 1px solid;
-            background-color: aquamarine;
-            font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-            font-size: small;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-    <div id="map"></div>
-     <div style="display: none">
-        <div id="popup" class="popup">
-            <p class="coord">Координаты</p>
-            <p class="coord"><span id="coordinates"></span></p>
-        </div>
-    </div>
-    <script type="module" src="main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ol@v9.2.2/dist/ol.js"></script>
+<body>  
+    
+<form id="infoToggle" style="position: fixed; bottom: 10px; left: 10px; background: white; padding: 5px; z-index: 1000; border: 1px solid #ccc; border-radius: 4px;">
+  <label><input type="radio" name="showCoords" value="yes" checked> Показать координаты</label><br>
+  <label><input type="radio" name="showCoords" value="no"> Скрыть координаты</label>
+</form>
+
+<form id="layers" style="position: fixed; bottom: 10px; right: 10px; background: white; padding: 5px; z-index: 1000; border: 1px solid #ccc; border-radius: 4px;">
+  <label><input type="radio" name="showlayer" value="yes" checked> Слой 1</label><br>
+  <label><input type="radio" name="showlayer" value="no"> Слой 2</label><br>
+  <label><input type="radio" name="showlayer" value="no"> Калуга</label>
+</form>
+
+<div id="map"></div>
+<div id="popup" class="popup" style="display: none;">
+<div id="popup-content" class="coord"></div>
+</div>   
+<script type="module" src="main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ol@v9.2.2/dist/ol.js"></script>
 </body>
 </html>
