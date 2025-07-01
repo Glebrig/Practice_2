@@ -1,3 +1,8 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+
 body.first {
     background-color: #f0f8ff; 
     background-image: url('back.png'); 
