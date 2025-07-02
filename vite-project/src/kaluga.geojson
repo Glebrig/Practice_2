@@ -401,27 +401,37 @@
 { "type": "Feature", "id": 441, "properties": { "orbis_id": 441.0, "name": "Пойма реки Рессета", "category": "Памятник природы", "value": "Регионального значения", "num1": null, "profile": "", "status2": "", "reg_date": "", "tocreate": "", "documents": "Приказ министерства природных ресурсов и экологии Калужской области от 20.06.2022 № 486-22 «Об объявлении поймы реки Рессета особо охраняемой природной территорией регионального значения - памятником природы»", "department": "Министерство природных ресурсов и экологии Калужской области", "international1": "", "international2": "", "num2": 1.0, "address": "Ульяновский район, окрестности  с. Кцынь и  с. Мойлово", "descript": "", "area_fact": "13551697 кв.м.", "protec_zone": "", "descrip_area1": "", "descrip_area2": "", "full_descrip1": "", "relief": "", "climate": "", "soilcover": "", "hydrology": "", "flora": "", "forestfund": "", "animals": "", "full_descrip2": "", "vegetation": "", "full_descrip3": "", "full_descrip4": "", "full_descrip5": "", "hist_note": "", "real_state": "", "explication": "", "negative": "", "owner1": "", "owner2": "", "protect": "", "zoning": "", "protect2": "", "owner3": "", "recreation": "", "string": "", "string1": "", "string2": "", "string3": "", "title1": "", "text": "", "group_obj": "Водные объекты", "subgroup": "Реки", "x": null, "y": null, "note": "", "details": "", "tmp_2": 12.0, "objectid": null, "tmp_1": null, "delete1": null, "at_unit": 4021.0, "created_at": "2025-03-31 16:41:07.657803", "updated_at": "2025-04-03 10:20:05.258272", "document": "" }, "geometry": { "type": "Point", "coordinates": [ 35.329328, 53.626469 ] } },
 { "type": "Feature", "id": 442, "properties": { "orbis_id": 442.0, "name": "Калужско-Алексинский каньон", "category": "Памятник природы", "value": "Регионального значения", "num1": null, "profile": "", "status2": "", "reg_date": "", "tocreate": "", "documents": "Приказ министерства природных ресурсов и экологии Калужской области от 06.12.2021 № 1176-21 «Об объявлении Калужско-Алексинского каньона особо охраняемой природной территорией регионального значения – памятником природы»", "department": "Министерство природных ресурсов и экологии Калужской области", "international1": "", "international2": "", "num2": 12.0, "address": "городской округ «Город Калуга»,  г. Калуга", "descript": "", "area_fact": "", "protec_zone": "", "descrip_area1": "", "descrip_area2": "", "full_descrip1": "", "relief": "", "climate": "", "soilcover": "", "hydrology": "", "flora": "", "forestfund": "", "animals": "", "full_descrip2": "", "vegetation": "", "full_descrip3": "", "full_descrip4": "", "full_descrip5": "", "hist_note": "", "real_state": "", "explication": "", "negative": "", "owner1": "", "owner2": "", "protect": "", "zoning": "", "protect2": "", "owner3": "", "recreation": "", "string": "", "string1": "", "string2": "", "string3": "", "title1": "", "text": "", "group_obj": "", "subgroup": "", "x": null, "y": null, "note": "", "details": "", "tmp_2": 3.0, "objectid": null, "tmp_1": null, "delete1": null, "at_unit": 4025.0, "created_at": "2025-04-02 09:53:53.791722", "updated_at": "2025-04-03 10:25:46.665241", "document": "" }, "geometry": { "type": "Point", "coordinates": [ 36.548952499999984, 54.441558399999977 ] } },
 
+{
+  "type": "Feature",
+  "geometry": {
+  "type": "Point",
+  "coordinates": [
+    36.256945, 
+    54.506964
+    ]
+  },
+  "properties": {
+  "marker-symbol": "-",
+  "name": "Орби Системс",
+  "address": "-"
+  }
+},
 
- {
+{
       "type": "Feature",
       "geometry": {
         "type": "Point",
         "coordinates": [
-          36.256945, 
-          54.506964
+          36.305001, 
+          54.487095
         ]
       },
       "properties": {
         "marker-symbol": "-",
-        "name": "Орби Системс",
+        "name": "КФ МГТУ",
         "address": "-"
       }
     }
 
-
 ]
 }
-
-
-
-

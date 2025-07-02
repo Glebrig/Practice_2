@@ -23,6 +23,30 @@ const filterInput = document.getElementById("object-filter");
 // --- Фильтр ---
 let currentFilter = localStorage.getItem("objectFilter") || "";
 
+// --- Загрузка сохранённого центра и масштаба ---
+const savedCenter = localStorage.getItem('mapCenter');
+const savedZoom = localStorage.getItem('mapZoom');
+
+let initialCenter;
+let initialZoom;
+
+try {
+  if (savedCenter) {
+    const centerArray = JSON.parse(savedCenter);
+    if (Array.isArray(centerArray) && centerArray.length === 2) {
+      initialCenter = fromLonLat(centerArray);
+    }
+  }
+} catch (e) {
+  console.warn('Ошибка при парсинге сохранённого центра карты:', e);
+}
+
+initialZoom = savedZoom ? Number(savedZoom) : 10;
+
+if (!initialCenter) {
+  initialCenter = fromLonLat([36.2754, 54.5293]);
+}
+
 // --- Создаем карту ---
 const map = new Map({
   target: "map",
@@ -32,10 +56,26 @@ const map = new Map({
     }),
   ],
   view: new View({
-    center: fromLonLat([36.2754, 54.5293]),
-    zoom: 10,
+    center: initialCenter,
+    zoom: initialZoom,
   }),
 });
+
+// --- Сохраняем позицию карты при изменении центра и масштаба ---
+map.getView().on('change:center', saveView);
+map.getView().on('change:resolution', saveView);
+
+function saveView() {
+  const view = map.getView();
+  const center = toLonLat(view.getCenter());
+  const zoom = view.getZoom();
+  try {
+    localStorage.setItem('mapCenter', JSON.stringify(center));
+    localStorage.setItem('mapZoom', zoom.toString());
+  } catch (e) {
+    console.warn('Ошибка при сохранении позиции карты:', e);
+  }
+}
 
 // --- Popup ---
 const popup = document.getElementById("popup");
@@ -331,25 +371,67 @@ function renderObjectsTable(source) {
   container.innerHTML = html;
 }
 
-// --- Переключение слоев ---
+// --- Переключение слоев с изменением позиции карты и сохранением ---
 function switchLayer(selected) {
+  let targetCenter;
+  let targetZoom;
+
   if (selected === "layer1") {
     vectorLayer1.setVisible(true);
     vectorLayer2.setVisible(false);
     vectorLayer3.setVisible(false);
-    map.getView().animate({ center: fromLonLat([-77.03195, 38.907826]), zoom: 11 });
+    targetCenter = fromLonLat([-77.03195, 38.907826]);
+    targetZoom = 11;
     renderObjectsTable(vectorSource1);
   } else if (selected === "layer2") {
     vectorLayer1.setVisible(false);
     vectorLayer2.setVisible(true);
     vectorLayer3.setVisible(false);
-    map.getView().animate({ center: fromLonLat([37.6173, 55.7558]), zoom: 10 });
+    targetCenter = fromLonLat([37.6173, 55.7558]);
+    targetZoom = 10;
     renderObjectsTable(vectorSource2);
   } else if (selected === "layer3") {
     vectorLayer1.setVisible(false);
     vectorLayer2.setVisible(false);
     vectorLayer3.setVisible(true);
-    map.getView().animate({ center: fromLonLat([36.3, 54.5]), zoom: 10 });
+    targetCenter = fromLonLat([36.3, 54.5]);
+    targetZoom = 10;
+    renderObjectsTable(vectorSource3);
+  }
+
+  map.getView().animate({ center: targetCenter, zoom: targetZoom }, () => {
+    const view = map.getView();
+    const center = toLonLat(view.getCenter());
+    const zoom = view.getZoom();
+    localStorage.setItem('mapCenter', JSON.stringify(center));
+    localStorage.setItem('mapZoom', zoom.toString());
+  });
+
+  popup.style.display = "none";
+  overlay.setPosition(undefined);
+
+  if (filterInput) filterInput.value = currentFilter;
+  vectorLayer1.changed();
+  vectorLayer2.changed();
+  vectorLayer3.changed();
+}
+
+// --- Функция переключения слоя без анимации (для инициализации с сохранённой позицией) ---
+function showLayerWithoutAnimation(selected) {
+  if (selected === "layer1") {
+    vectorLayer1.setVisible(true);
+    vectorLayer2.setVisible(false);
+    vectorLayer3.setVisible(false);
+    renderObjectsTable(vectorSource1);
+  } else if (selected === "layer2") {
+    vectorLayer1.setVisible(false);
+    vectorLayer2.setVisible(true);
+    vectorLayer3.setVisible(false);
+    renderObjectsTable(vectorSource2);
+  } else if (selected === "layer3") {
+    vectorLayer1.setVisible(false);
+    vectorLayer2.setVisible(false);
+    vectorLayer3.setVisible(true);
     renderObjectsTable(vectorSource3);
   }
   popup.style.display = "none";
@@ -386,7 +468,7 @@ function updateTableVisibility(forceShow) {
     } else {
       tableContainer.style.height = '0';
       tableContainer.style.display = 'none';
-      if (filterContainer) filterContainer.style.display = "none";
+      if (filterContainer) filterContainer.style.display = 'none';
     }
     map.updateSize();
   }
@@ -410,16 +492,35 @@ function loadSelectedTableVisibility() {
 // --- Инициализация ---
 loadCSVtoLayer("./src/my.csv", vectorSource2).then(() => {
   const savedLayer = loadSelectedLayer();
-  if (savedLayer) {
-    const radio = layersForm.querySelector(`input[name="showLayer"][value="${savedLayer}"]`);
-    if (radio) {
-      radio.checked = true;
-      switchLayer(savedLayer);
+  const savedCenter = localStorage.getItem('mapCenter');
+  const savedZoom = localStorage.getItem('mapZoom');
+
+  if (savedCenter && savedZoom) {
+    // Есть сохранённая позиция — показываем слой без анимации центра
+    if (savedLayer) {
+      const radio = layersForm.querySelector(`input[name="showLayer"][value="${savedLayer}"]`);
+      if (radio) {
+        radio.checked = true;
+        showLayerWithoutAnimation(savedLayer);
+      } else {
+        showLayerWithoutAnimation('layer3');
+      }
+    } else {
+      showLayerWithoutAnimation('layer3');
+    }
+  } else {
+    // Нет сохранённой позиции — переключаем слой с анимацией центра
+    if (savedLayer) {
+      const radio = layersForm.querySelector(`input[name="showLayer"][value="${savedLayer}"]`);
+      if (radio) {
+        radio.checked = true;
+        switchLayer(savedLayer);
+      } else {
+        switchLayer('layer3');
+      }
     } else {
       switchLayer('layer3');
     }
-  } else {
-    switchLayer('layer3');
   }
 
   const savedTableVisibility = loadSelectedTableVisibility();
