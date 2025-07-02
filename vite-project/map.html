@@ -1,33 +1,43 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Карта</title>
-    <link rel="icon" type="image/x-icon" href="icon.ico">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.2.2/ol.css">
-    <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Карта</title>
+  <link rel="icon" type="image/x-icon" href="icon.ico" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.2.2/ol.css" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body>  
-    
-<form id="infoToggle" style="position: fixed; bottom: 10px; left: 10px; background: white; padding: 5px; z-index: 1000; border: 1px solid #ccc; border-radius: 4px;">
-  <label><input type="radio" name="showCoords" value="yes" checked> Показать координаты</label><br>
-  <label><input type="radio" name="showCoords" value="no"> Скрыть координаты</label>
-</form>
+<body>
+  <form id="infoToggle" style="bottom: 10px; left: 10px;">
+    <label><input type="radio" name="showCoords" value="yes" checked /> Показать координаты</label><br />
+    <label><input type="radio" name="showCoords" value="no" /> Скрыть координаты</label>
+  </form>
 
+  <form id="tableToggle" style="bottom: 60px; left: 10px;">
+    <label><input type="radio" name="showTable" value="yes" checked /> Показать таблицу</label><br />
+    <label><input type="radio" name="showTable" value="no" /> Скрыть таблицу</label>
+  </form>
 
-<form id="layers" style="position: fixed; bottom: 10px; right: 10px; background: white; padding: 5px; z-index: 1000; border: 1px solid #ccc; border-radius: 4px;">
-  <label><input type="radio" name="showLayer" value="layer1"> Вашингтон</label><br>
-  <label><input type="radio" name="showLayer" value="layer2"> Москва</label><br>
-  <label><input type="radio" name="showLayer" value="layer3" checked> Калуга</label>
-</form>
+  <form id="layers" style="bottom: 10px; right: 10px;">
+    <label><input type="radio" name="showLayer" value="layer1" /> Вашингтон</label><br />
+    <label><input type="radio" name="showLayer" value="layer2" /> Москва</label><br />
+    <label><input type="radio" name="showLayer" value="layer3" checked /> Калуга</label>
+  </form>
 
+  <div id="map-table-wrapper">
+    <div id="map"></div>
+    <div id="filter-container" style="padding: 8px; background: #fff; border-bottom: 1px solid #ccc;">
+      <input type="text" id="object-filter" placeholder="Фильтр по названию..." style="width: 100%; padding: 4px;" />
+    </div>
+    <div id="objects-table"></div>
+  </div>
 
-<div id="map"></div>
-<div id="popup" class="popup" style="display: none;">
-<div id="popup-content" class="coord"></div>
-</div>   
-<script type="module" src="main.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/ol@v9.2.2/dist/ol.js"></script>
+  <div id="popup" class="popup" style="display: none;">
+    <div id="popup-content" class="coord"></div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ol@v9.2.2/dist/ol.js"></script>
 </body>
 </html>
