@@ -92,20 +92,55 @@ const vectorLayer2 = new VectorLayer({
 });
 map.addLayer(vectorLayer2);
 
-// 3. Калуга — GeoJSON
+// 3. Калуга — GeoJSON с разными маркерами по group_obj
 const vectorSource3 = new VectorSource({
   url: "./src/kaluga.geojson",
   format: new GeoJSON(),
 });
-const baseStyle3 = new Style({
-  image: new Icon({
-    anchor: [0.5, 1],
-    src: "./marker.png",
-  }),
-});
+
+// Функция выбора стиля для третьего слоя по group_obj
+function styleForGroupObj(feature) {
+  const group = feature.get('group_obj');
+  let iconSrc;
+
+  switch (group) {
+    case "Ландшафтные объекты":
+      iconSrc = "./marker_landshaft.png";
+      break;
+    case "Водные объекты":
+      iconSrc = "./marker.png";
+      break;
+    case "Историко-культурные объекты":
+      iconSrc = "./marker_iko.png";
+      break;
+    case "Лесные массивы":
+      iconSrc = "./marker_les.png";
+      break;
+    default:
+      iconSrc = "./marker_other.png";
+  }
+
+  return new Style({
+    image: new Icon({
+      anchor: [0.5, 1],
+      src: iconSrc,
+    }),
+  });
+}
+
 const vectorLayer3 = new VectorLayer({
   source: vectorSource3,
-  style: feature => getFilteredStyle(feature, baseStyle3),
+  style: feature => {
+    if (!currentFilter) return styleForGroupObj(feature);
+    const props = feature.getProperties();
+    const filterText = currentFilter.trim().toLowerCase();
+    const searchFields = ["name"];
+    const matched = searchFields.some(field => {
+      const val = (props[field] || "").toLowerCase();
+      return val.includes(filterText);
+    });
+    return matched ? styleForGroupObj(feature) : null;
+  },
 });
 map.addLayer(vectorLayer3);
 
@@ -150,10 +185,8 @@ function getFilteredFeatures(source) {
   let searchFields = [];
 
   if (source === vectorSource2) {
-    // Для слоя 2 — Название_ru и Name_en
     searchFields = ["Название_ru", "Name_en"];
   } else {
-    // Для слоёв 1 и 3 — поле name
     searchFields = ["name"];
   }
 
@@ -166,7 +199,7 @@ function getFilteredFeatures(source) {
   });
 }
 
-// --- Фильтрация стилей (скрытие объектов на карте) с учётом разных полей ---
+// --- Фильтрация стилей ---
 function getFilteredStyle(feature, baseStyle) {
   if (!currentFilter) return baseStyle;
   const props = feature.getProperties();
@@ -276,15 +309,13 @@ function renderObjectsTable(source) {
 
   const features = getFilteredFeatures(source);
   if (!features.length) {
-    container.innerHTML = "<em>Нет данных для отображения</em>";
+    container.innerHTML = "<br>Нет данных для отображения" ;
     return;
   }
 
-  // Собираем ключи для заголовка таблицы
   const allProps = features.map((f) => f.getProperties());
   const keys = Object.keys(allProps[0]).filter((k) => k !== "geometry");
 
-  // Генерируем HTML таблицы
   let html = '<table><thead><tr>';
   keys.forEach((key) => (html += `<th>${key}</th>`));
   html += "<th>Действие</th></tr></thead><tbody>";
@@ -324,9 +355,7 @@ function switchLayer(selected) {
   popup.style.display = "none";
   overlay.setPosition(undefined);
 
-  // Обновить фильтр в поле
   if (filterInput) filterInput.value = currentFilter;
-  // Обновить стили слоя для фильтрации
   vectorLayer1.changed();
   vectorLayer2.changed();
   vectorLayer3.changed();
@@ -343,7 +372,6 @@ function updateTableVisibility(forceShow) {
 
   if (typeof forceShow === 'boolean') {
     showTable = forceShow;
-    // Обновляем переключатель в форме, если нужно
     const radioToCheck = tableToggleForm.querySelector(`input[name="showTable"][value="${showTable ? 'yes' : 'no'}"]`);
     if (radioToCheck) radioToCheck.checked = true;
   } else {
@@ -363,7 +391,6 @@ function updateTableVisibility(forceShow) {
     map.updateSize();
   }
 
-  // Сохраняем в localStorage
   localStorage.setItem(STORAGE_KEY_TABLE, showTable ? 'yes' : 'no');
 }
 
@@ -381,9 +408,7 @@ function loadSelectedTableVisibility() {
 }
 
 // --- Инициализация ---
-
 loadCSVtoLayer("./src/my.csv", vectorSource2).then(() => {
-  // Восстановление выбранного слоя
   const savedLayer = loadSelectedLayer();
   if (savedLayer) {
     const radio = layersForm.querySelector(`input[name="showLayer"][value="${savedLayer}"]`);
@@ -397,7 +422,6 @@ loadCSVtoLayer("./src/my.csv", vectorSource2).then(() => {
     switchLayer('layer3');
   }
 
-  // Восстановление видимости таблицы и фильтра
   const savedTableVisibility = loadSelectedTableVisibility();
   if (savedTableVisibility === 'yes' || savedTableVisibility === 'no') {
     updateTableVisibility(savedTableVisibility === 'yes');
@@ -405,7 +429,6 @@ loadCSVtoLayer("./src/my.csv", vectorSource2).then(() => {
     updateTableVisibility(true);
   }
 
-  // Восстановление фильтра
   if (filterInput) {
     filterInput.value = currentFilter;
     filterInput.dispatchEvent(new Event("input"));
