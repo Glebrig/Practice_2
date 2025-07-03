@@ -1,155 +1,169 @@
+/* Сброс отступов и паддингов у всех элементов, установка box-sizing */
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing:border-box;
+}
+
 html, body {
-margin: 0;
-padding: 0; 
-height: 100%;
-font-family: Arial, sans-serif;
-font-size: 14px;
+  height: 100%;
+  width: 100%;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  overflow: hidden; /* Убираем скролл всей страницы */
 }
 
 body.first {
-    background-color: #f0f8ff; 
-    background-image: url('back.png'); 
-    background-repeat: no-repeat;     
-    background-size: cover;         
-    min-height: 100vh;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  background-color: #f0f8ff; 
+  background-image: url('back.png'); 
+  background-repeat: no-repeat;     
+  background-size: cover;         
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-#go_map{
-    font-size: 2rem; 
-    border-radius: 10px;  
-    text-align: center;         
-    font-size: 2.5rem;              
-    padding: 20px 40px;
-    border-radius: 10px;
+#go_map {
+  font-size: 2.5rem;              
+  padding: 20px 40px;
+  border-radius: 10px;
+  text-align: center;         
 }
 
 h1 {
-    margin: 1%;
-    color: green;
-    text-align: center;         
-    font-size: 2.5rem;        
-    background: #e6ffe6;       
-    padding: 20px 40px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  margin: 3%;
+  color: green;
+  text-align: center;         
+  font-size: 2.5rem;        
+  background: #e6ffe6;       
+  padding: 20px 40px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
 }
 
 button {
-    background-color: green;
-    color: #fff;
-    font-size: 1.4rem;         
-    padding: 15px 40px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 30px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-    transition: background 0.2s;
+  background-color: green;
+  color: #fff;
+  font-size: 1.4rem;         
+  padding: 5px 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 0px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  transition: background 0.2s;
 }
 
 button:hover {
-    background-color: lawngreen;
+  background-color: lawngreen;
 }
 
+/* Контейнер карты и таблицы */
+#map-table-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw; /* Полная ширина окна */
+  overflow: hidden;
+  padding: 0px; /* Отступы по бокам (можно убрать или изменить) */
+  box-sizing: border-box;
+  margin: 0; /* Убираем возможные внешние отступы */
+}
+
+/* Карта занимает всё доступное пространство без лишних отступов */
 #map {
-    width: 100vw;
-    height: 100vh;
-    flex-grow: 1;
-    min-height: 0;
-    margin: 0px;
-    padding: 0px; 
-}
-
-.coord{
-    color: black;
-    border: 1px solid;
-    background-color: aquamarine;
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    font-size: small;
-}
-
-#objects-table {
-  padding: 0px;
-  max-height: 300px;
-  overflow-y: auto;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-  background: white;
-  border: 1px solid gray;
-  border-radius: 4px;
+  flex-grow: 1;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  background: #eee; /* Можно убрать или заменить на нужный фон */
   box-sizing: border-box;
 }
 
-#map-table-wrapper {
-    display: flex;
-    flex-direction: column;
-    height: 100vh; 
+.coord {
+  color: black;
+  border: 1px solid;
+  background-color: aquamarine;
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-size: small;
 }
 
-button {
-    cursor: pointer;
-    padding: 4px 8px;
-    margin: 0 auto;   
+/* Таблица объектов */
+#objects-table {
+  max-height: 300px;       /* Максимальная высота */
+  overflow-y: auto;        /* Вертикальный скролл при необходимости */
+  background: white;
+  border: 1px solid gray;
+  border-radius: 4px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  width: 100%;             /* Растягиваем по ширине контейнера */
+  margin: 0px 0 0 0;      /* Отступ сверху */
+  box-sizing: border-box;
 }
+
+/*
+button.tabble{
+      margin-top: 0% !important; 
+}*/
 
 table {
-    border-collapse: collapse;
-    width: 100%;
-
+  border-collapse: collapse;
+  width: 100%;
 }
 
 table th, table td {
-    border: 1px solid lightgrey;
-    padding: 6px;
-    text-align: center;
-    vertical-align: top;
+  border: 1px solid lightgrey;
+  padding: 6px;
+  text-align: center;
+  vertical-align: top;
 }
 
 table th {
-    background-color: gray;
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    text-align: center;
+  background-color: gray;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  text-align: center;
 }
 
 form {
-    background: white;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    position: fixed;
-    z-index: 1000;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
+  background: white;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  position: fixed;
+  z-index: 1000;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  margin: 0; /* Убираем возможные внешние отступы */
 }
 
 #infoToggle {
-    bottom: 10px;
-    left: 10px;
+  bottom: 10px;
+  left: 10px;
 }
 
 #tableToggle {
-    bottom: 60px;
-    left: 10px;
+  bottom: 60px;
+  left: 10px;
 }
 
 #layers {
-    bottom: 10px;
-    right: 10px;
+  bottom: 10px;
+  right: 10px;
 }
 
-#filter-container{
-    padding: 4px; 
-    background: lightgray;
-    border-bottom: 1px solid gray;
+#filter-container {
+  padding: 4px; 
+  background: lightgray;
+  border-bottom: 1px solid gray;
 }
 
-#object-filter{
-    width: 100%; padding: 5px;
+#object-filter {
+  width: 100%; 
+  padding: 5px;
 }
