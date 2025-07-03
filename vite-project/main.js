@@ -13,6 +13,96 @@ import Icon from "ol/style/Icon";
 import { fromLonLat, toLonLat } from "ol/proj";
 import { createStringXY } from "ol/coordinate";
 
+
+
+// --- Русификация названий столбцов ---
+const columnNamesLayer1 = {
+  "marker-symbol": "Тип",
+  "name": "Название",
+  "address": "Адрес",
+  "Действие": "Действие"
+};
+
+const columnNamesLayer2 = {
+  "id": "ID",
+  "Название_ru": "Название (рус)",
+  "Name_en": "Название (англ)",
+  "id_станции": "ID станции",
+  "Направление": "Направление",
+  "lat": "Широта",
+  "lon": "Долгота",
+  "Действие": "Действие"
+};
+
+const columnNamesLayer3 = {
+  "orbis_id": "Orbis ID",
+  "name": "Имя",
+  "category": "Категория",
+  "value": "Значение",
+  "num1": "Номер_1",
+  "tocreate": "Задача",
+  "profile": "Профиль",
+  "status2": "Статус",
+  "reg_date": "Дата регистрации",
+  "to_create": "Дата создания",
+  "documents": "Документы",
+  "department": "Отдел",
+  "international1": "Международный_1",
+  "international2": "Международный_2",
+  "num2": "Номер_2",
+  "address": "Адрес",
+  "descript": "Описание",
+  "area_fact": "Площадь",
+  "protec_zone": "Зона защиты",
+  "descrip_area1": "Описание зоны_1",
+  "descrip_area2": "Описание зоны_2",
+  "full_descrip1": "Полное описание_1",
+  "relief": "Рельеф",
+  "climate": "Климат",
+  "soilcover": "Почвенный покров",
+  "hydrology": "Гидрология",
+  "flora": "Флора",
+  "forestfund": "Лесной фонд",
+  "animals": "Животные",
+  "full_descrip2": "Полное описание_2",
+  "vegetation": "Вегетация",
+  "full_descrip3": "Полное описание_3",
+  "full_descrip4": "Полное описание_4",
+  "full_descrip5": "Полное описание_5",
+  "hist_note": "Историческая заметка",
+  "real_state": "Состояние",
+  "explication": "Пояснение",
+  "negative": "Отрицательное влияние",
+  "owner1": "Владелец_1",
+  "owner2": "Владелец_2",
+  "protect": "Защита",
+  "zoning": "Зонирование",
+  "protect2": "Защита_2",
+  "owner3": "Владелец_3",
+  "recreation": "Рекреация",
+  "string": "Строка",
+  "string1": "Строка_1",
+  "string2": "Строка_2",
+  "string3": "Строка_3",
+  "title1": "Заголовок_1",
+  "text": "Текст",
+  "group_obj": "Группа объектов",
+  "subgroup": "Подгруппа",
+  "x": "Долгота",
+  "y" : "Широта",
+  "note": "Примечание",
+  "details": "Детали",
+  "tmp_2": "Временный_2",
+  "objectid": "ID объекта",
+  "tmp_1": "Временный_1",
+  "delete1": "Удалено",
+  "at_unit": "В ед. измерения",
+  "created_at": "Создано",
+  "updated_at": "Обновлено",
+  "document": "Документ",
+  "Действие": "Действие"
+};
+
 // --- Получаем элементы форм ---
 const infoToggleForm = document.getElementById("infoToggle");
 const tableToggleForm = document.getElementById("tableToggle");
@@ -334,7 +424,7 @@ map.on("click", (event) => {
   }
 });
 
-// --- Функция генерации таблицы ---
+// --- Функция генерации таблицы с русификацией заголовков ---
 function getActiveLayerIndex() {
   const selected = layersForm.querySelector('input[name="showLayer"]:checked').value;
   if (selected === "layer1") return 1;
@@ -349,21 +439,41 @@ function renderObjectsTable(source) {
 
   const features = getFilteredFeatures(source);
   if (!features.length) {
-    container.innerHTML = "<br>Нет данных для отображения" ;
+    container.innerHTML = '<p style="padding: 10px; color: #666; font-style: italic; text-align: center;">Нет данных для отображения</p>';
     return;
   }
 
   const allProps = features.map((f) => f.getProperties());
-  const keys = Object.keys(allProps[0]).filter((k) => k !== "geometry");
+  let keys = Object.keys(allProps[0]).filter((k) => k !== "geometry");
+
+  // Убираем "name" во втором слое, чтобы не дублировать с "Название_ru"
+  if (source === vectorSource2) {
+    keys = keys.filter(k => k !== "name");
+  }
+
+  // Выбираем словарь в зависимости от слоя
+  let columnNames;
+  if (source === vectorSource1) {
+    columnNames = columnNamesLayer1;
+  } else if (source === vectorSource2) {
+    columnNames = columnNamesLayer2;
+  } else if (source === vectorSource3) {
+    columnNames = columnNamesLayer3;
+  } else {
+    columnNames = {};
+  }
 
   let html = '<table><thead><tr>';
-  keys.forEach((key) => (html += `<th>${key}</th>`));
+  keys.forEach((key) => {
+    const colName = columnNames[key] || key; // Русское название или оригинал
+    html += `<th>${colName}</th>`;
+  });
   html += "<th>Действие</th></tr></thead><tbody>";
 
   features.forEach((f) => {
     html += "<tr>";
     keys.forEach((key) => (html += `<td>${f.get(key) ?? ""}</td>`));
-    html += `<td><button onclick="zoomToFeature({layer: ${getActiveLayerIndex()}, id: '${f.getId()}'})">Показать</button></td>`;
+    html += `<td><button class="table" onclick="zoomToFeature({layer: ${getActiveLayerIndex()}, id: '${f.getId()}'})">Показать</button></td>`;
     html += "</tr>";
   });
 
@@ -462,7 +572,7 @@ function updateTableVisibility(forceShow) {
 
   if (tableContainer && mapContainer) {
     if (showTable) {
-      tableContainer.style.height = '300px';
+      tableContainer.style.height = 'auto'; // Таблица занимает высоту по содержимому
       tableContainer.style.display = 'block';
       if (filterContainer) filterContainer.style.display = "block";
     } else {
@@ -470,7 +580,7 @@ function updateTableVisibility(forceShow) {
       tableContainer.style.display = 'none';
       if (filterContainer) filterContainer.style.display = 'none';
     }
-    map.updateSize();
+    map.updateSize(); // Обновление размера карты
   }
 
   localStorage.setItem(STORAGE_KEY_TABLE, showTable ? 'yes' : 'no');
