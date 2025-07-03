@@ -5,7 +5,7 @@
 1. Установить репозиторий
 2. Открыть консоль
 3. Открыть папку vite-project
-    cd ...\Practice\vite-project
+    `cd ...\Practice\vite-project`
 4. Запустить локальный сервер
-    npm run dev
-5. Сайт готов http://localhost:5173/
+    `npm run dev`
+5. Сайт готов `http://localhost:5173/`
