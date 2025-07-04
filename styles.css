@@ -1,0 +1,212 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing:border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  overflow: hidden;
+}
+
+body.first {
+  background-color: #f0f8ff; 
+  background-image: url('./src/back.png'); 
+  background-repeat: no-repeat;     
+  background-size: cover;         
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#go_map {
+  font-size: 2.5rem;               
+  padding: 20px 40px;
+  border-radius: 10px;
+  text-align: center;         
+}
+
+h1 {
+  margin: 3%;
+  color: green;
+  text-align: center;         
+  font-size: 2.5rem;        
+  background: #e6ffe6;       
+  padding: 20px 40px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+p{
+  padding: 10px; 
+  color: #666;
+  font-style: italic; 
+  text-align: center;
+}
+
+button {
+  background-color: green;
+  color: #fff;
+  font-size: 1.4rem;         
+  padding: 5px 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 0px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  transition: background 0.2s;
+}
+
+button:hover {
+  background-color: lawngreen;
+}
+
+#presentation-btn {
+  background-color: green;
+  color: #fff;
+  font-size: 1.2rem;
+  padding: 7px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 1100;
+}
+#presentation-btn:hover {
+  background-color: lawngreen;
+}
+
+#map-table-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw; 
+  overflow: hidden;
+  padding: 0px;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+#map {
+  flex-grow: 1;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  background: white;
+  box-sizing: border-box;
+}
+
+.coord {
+  color: black;
+  border: 1px solid;
+  background-color: aquamarine;
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-size: small;
+}
+
+#objects-table {
+  max-height: 300px;       
+  overflow-y: auto;      
+  background: white;
+  border: 1px solid gray;
+  border-radius: 4px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  width: 100%;            
+  margin: 0px 0 0 0;    
+  box-sizing: border-box;
+}
+
+#objects-table tr.highlighted {
+  background-color: #ffff99 !important;
+  font-weight: bold;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table th, table td {
+  border: 1px solid lightgrey;
+  padding: 6px;
+  text-align: center;
+  vertical-align: top;
+}
+
+table th {
+  background-color: gray;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  text-align: center;
+}
+
+form {
+  background: white;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  position: fixed;
+  z-index: 1000;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  margin: 0;
+}
+
+#layers {
+  top: 10px;
+  right: 10px;
+  left: auto;
+  bottom: auto;
+  position: fixed;
+  z-index: 1000;
+  background: #fff;
+  padding: 6px 10px;
+  border: 2px solid #ccc;
+}
+
+#infoToggle {
+  top: 90px;
+  right: 10px;  
+  left: auto;
+  bottom: auto;
+  position: fixed;
+  background: #fff;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+#tableToggle {
+  top: 160px;
+  right: 10px;  
+  left: auto;
+  bottom: auto;
+  position: fixed;
+  background: #fff;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+
+#filter-container {
+  padding: 4px; 
+  background: lightgray;
+  border-bottom: 1px solid gray;
+}
+
+#object-filter {
+  width: 100%; 
+  padding: 5px;
+}
