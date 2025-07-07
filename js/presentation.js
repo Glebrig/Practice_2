@@ -1,5 +1,5 @@
 import { map, overlay } from "./map.js";
-import { vectorSource1, vectorSource2, vectorSource3 } from "./layers.js";
+import layersConfig from "./layers.js";
 import { createStringXY } from "ol/coordinate";
 import { toLonLat } from "ol/proj";
 import { highlightTableRow, showTableAndRender } from "./main.js";
@@ -9,15 +9,13 @@ let tourActive = false;
 let tourTimeout = null;
 let tourIndex = 0;
 let tourFeatures = [];
-let tourLayer = 3;
+let tourLayer = layersConfig.length - 1;
 
 let savedFilter = "";
 let savedTableVisible = true;
 
 function getCurrentSource() {
-  if (tourLayer === 1) return vectorSource1;
-  if (tourLayer === 2) return vectorSource2;
-  return vectorSource3;
+  return layersConfig[tourLayer].source;
 }
 
 function showFeature(feature) {
@@ -101,9 +99,7 @@ export function stopPresentationTour() {
     if (filterContainer) {
       filterContainer.style.display = 'none';
     }
-    vectorSource1.changed();
-    vectorSource2.changed();
-    vectorSource3.changed();
+    layersConfig.forEach(l => l.vectorLayer.changed());
   }
 }
 

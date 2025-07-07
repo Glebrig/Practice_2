@@ -1,5 +1,5 @@
 import { map, overlay } from "./map.js";
-import { vectorSource1, vectorSource2, vectorSource3, vectorLayer1, vectorLayer2, vectorLayer3 } from "./layers.js";
+import layersConfig from "./layers.js";
 import { renderObjectsTable } from "./table.js";
 import { updatePopupContent, handleMapClick } from "./popup.js";
 import { saveView, loadView, saveSelectedLayer, loadSelectedLayer, saveTableVisibility, loadTableVisibility, saveFilter, loadFilter } from "./storage.js";
@@ -21,6 +21,17 @@ const layersForm = document.getElementById("layers");
 const filterContainer = document.getElementById("filter-container");
 const filterInput = document.getElementById("object-filter");
 
+// --- Генерация radio-кнопок слоёв ---
+function renderLayerRadios() {
+  layersForm.innerHTML = "";
+  layersConfig.forEach((layer, idx) => {
+    const checked = (idx === layersConfig.length - 1) ? "checked" : "";
+    layersForm.innerHTML +=
+      `<label><input type="radio" name="showLayer" value="${layer.id}" ${checked}/> ${layer.title}</label><br/>`;
+  });
+}
+renderLayerRadios();
+
 // --- Сохраняем позицию карты при изменении центра и масштаба ---
 map.getView().on('change:center', () => {
   const view = map.getView();
@@ -36,10 +47,10 @@ async function loadCSVtoLayer(url, source) {
   const res = await fetch(url);
   const text = await res.text();
   const lines = text.trim().split("\n");
-  const headers = lines[0].split(";").map((h) => h.trim());
+  const headers = lines[0].split(";").map(h => h.trim());
   source.clear();
   for (let i = 1; i < lines.length; i++) {
-    const row = lines[i].split(";").map((cell) => cell.trim());
+    const row = lines[i].split(";").map(cell => cell.trim());
     if (row.length !== headers.length) continue;
     const obj = {};
     headers.forEach((h, idx) => (obj[h] = row[idx]));
@@ -56,83 +67,52 @@ async function loadCSVtoLayer(url, source) {
   }
 }
 
-// --- Функция для определения, показывать ли координаты ---
+// --- Определение, показывать ли координаты ---
 function shouldShowCoords() {
   if (!infoToggleForm) return true;
   const checked = infoToggleForm.querySelector('input[name="showCoords"]:checked');
   return checked && checked.value === "yes";
 }
 
-// --- Функция генерации таблицы ---
+// --- Получить индекс активного слоя ---
 function getActiveLayerIndex() {
   const selected = layersForm.querySelector('input[name="showLayer"]:checked').value;
-  if (selected === "layer1") return 1;
-  if (selected === "layer2") return 2;
-  if (selected === "layer3") return 3;
-  return 3;
+  return layersConfig.findIndex(layer => layer.id === selected);
 }
 
-// --- Переключение слоев ---
-function switchLayer(selected) {
-  let targetCenter, targetZoom;
-  if (selected === "layer1") {
-    vectorLayer1.setVisible(true);
-    vectorLayer2.setVisible(false);
-    vectorLayer3.setVisible(false);
-    targetCenter = fromLonLat([-77.03195, 38.907826]);
-    targetZoom = 11;
-    renderObjectsTable(vectorSource1, window.currentFilter, getActiveLayerIndex);
-  } else if (selected === "layer2") {
-    vectorLayer1.setVisible(false);
-    vectorLayer2.setVisible(true);
-    vectorLayer3.setVisible(false);
-    targetCenter = fromLonLat([37.6173, 55.7558]);
-    targetZoom = 10;
-    renderObjectsTable(vectorSource2, window.currentFilter, getActiveLayerIndex);
-  } else if (selected === "layer3") {
-    vectorLayer1.setVisible(false);
-    vectorLayer2.setVisible(false);
-    vectorLayer3.setVisible(true);
-    targetCenter = fromLonLat([36.3, 54.5]);
-    targetZoom = 10;
-    renderObjectsTable(vectorSource3, window.currentFilter, getActiveLayerIndex);
-  }
-  map.getView().animate({ center: targetCenter, zoom: targetZoom }, () => {
-    const view = map.getView();
-    saveView(toLonLat(view.getCenter()), view.getZoom());
+// --- Переключение слоёв ---
+function switchLayer(selectedId) {
+  layersConfig.forEach(layer => {
+    layer.vectorLayer.setVisible(layer.id === selectedId);
+    if (layer.id === selectedId) {
+      map.getView().animate({
+        center: fromLonLat(layer.center),
+        zoom: layer.zoom
+      }, () => {
+        const view = map.getView();
+        saveView(toLonLat(view.getCenter()), view.getZoom());
+      });
+      renderObjectsTable(layer.source, window.currentFilter, getActiveLayerIndex);
+    }
   });
   document.getElementById("popup").style.display = "none";
   overlay.setPosition(undefined);
   if (filterInput) filterInput.value = window.currentFilter;
-  vectorLayer1.changed();
-  vectorLayer2.changed();
-  vectorLayer3.changed();
+  layersConfig.forEach(l => l.vectorLayer.changed());
 }
 
-// --- Функция переключения слоя без анимации ---
-function showLayerWithoutAnimation(selected) {
-  if (selected === "layer1") {
-    vectorLayer1.setVisible(true);
-    vectorLayer2.setVisible(false);
-    vectorLayer3.setVisible(false);
-    renderObjectsTable(vectorSource1, window.currentFilter, getActiveLayerIndex);
-  } else if (selected === "layer2") {
-    vectorLayer1.setVisible(false);
-    vectorLayer2.setVisible(true);
-    vectorLayer3.setVisible(false);
-    renderObjectsTable(vectorSource2, window.currentFilter, getActiveLayerIndex);
-  } else if (selected === "layer3") {
-    vectorLayer1.setVisible(false);
-    vectorLayer2.setVisible(false);
-    vectorLayer3.setVisible(true);
-    renderObjectsTable(vectorSource3, window.currentFilter, getActiveLayerIndex);
-  }
+// --- Переключение слоя без анимации ---
+function showLayerWithoutAnimation(selectedId) {
+  layersConfig.forEach(layer => {
+    layer.vectorLayer.setVisible(layer.id === selectedId);
+    if (layer.id === selectedId) {
+      renderObjectsTable(layer.source, window.currentFilter, getActiveLayerIndex);
+    }
+  });
   document.getElementById("popup").style.display = "none";
   overlay.setPosition(undefined);
   if (filterInput) filterInput.value = window.currentFilter;
-  vectorLayer1.changed();
-  vectorLayer2.changed();
-  vectorLayer3.changed();
+  layersConfig.forEach(l => l.vectorLayer.changed());
 }
 
 // --- Управление видимостью таблицы и фильтра ---
@@ -162,65 +142,36 @@ function updateTableVisibility(forceShow) {
   saveTableVisibility(showTable);
 }
 
-// --- Функция выделения строки таблицы по id ---
-export function highlightTableRow(layer, id) {
+// --- Выделение строки таблицы ---
+export function highlightTableRow(layerIdx, id) {
   const table = document.getElementById("objects-table");
   if (!table) return;
-  // Убираем предыдущие выделения
   const prev = table.querySelector("tr.highlighted");
   if (prev) prev.classList.remove("highlighted");
-
-  // Ищем строку с data-id и data-layer
-  const row = table.querySelector(`tr[data-id="${id}"][data-layer="${layer}"]`);
+  const row = table.querySelector(`tr[data-id="${id}"][data-layer="${layerIdx}"]`);
   if (row) {
     row.classList.add("highlighted");
-    // Прокрутка к строке
     row.scrollIntoView({ behavior: "smooth", block: "center" });
   } else {
-    console.warn(`Строка с data-id="${id}" и data-layer="${layer}" не найдена в таблице`);
+    console.warn(`Строка с data-id="${id}" и data-layer="${layerIdx}" не найдена в таблице`);
   }
 }
 
-// --- Функция для показа таблицы и рендеринга ---
-export function showTableAndRender(layerIndex, filter) {
+// --- Показать таблицу и отрисовать ---
+export function showTableAndRender(layerIdx, filter) {
   updateTableVisibility(true);
-  let source;
-  if (layerIndex === 1) source = vectorSource1;
-  else if (layerIndex === 2) source = vectorSource2;
-  else source = vectorSource3;
-  renderObjectsTable(source, filter || "", () => layerIndex);
+  const layer = layersConfig[layerIdx];
+  renderObjectsTable(layer.source, filter || "", () => layerIdx);
 }
 
 // --- Инициализация ---
-loadCSVtoLayer("./src/my.csv", vectorSource2).then(() => {
+loadCSVtoLayer("./src/my.csv", layersConfig[1].source).then(() => {
   const savedLayer = loadSelectedLayer();
-  const savedCenter = localStorage.getItem('mapCenter');
-  const savedZoom = localStorage.getItem('mapZoom');
-  if (savedCenter && savedZoom) {
-    if (savedLayer) {
-      const radio = layersForm.querySelector(`input[name="showLayer"][value="${savedLayer}"]`);
-      if (radio) {
-        radio.checked = true;
-        showLayerWithoutAnimation(savedLayer);
-      } else {
-        showLayerWithoutAnimation('layer3');
-      }
-    } else {
-      showLayerWithoutAnimation('layer3');
-    }
-  } else {
-    if (savedLayer) {
-      const radio = layersForm.querySelector(`input[name="showLayer"][value="${savedLayer}"]`);
-      if (radio) {
-        radio.checked = true;
-        switchLayer(savedLayer);
-      } else {
-        switchLayer('layer3');
-      }
-    } else {
-      switchLayer('layer3');
-    }
-  }
+  const initialLayerId = (savedLayer && layersConfig.some(l => l.id === savedLayer)) ? savedLayer : layersConfig[layersConfig.length - 1].id;
+  const radio = layersForm.querySelector(`input[name="showLayer"][value="${initialLayerId}"]`);
+  if (radio) radio.checked = true;
+  showLayerWithoutAnimation(initialLayerId);
+
   const savedTableVisibility = loadTableVisibility();
   if (savedTableVisibility === 'yes' || savedTableVisibility === 'no') {
     updateTableVisibility(savedTableVisibility === 'yes');
@@ -233,7 +184,7 @@ loadCSVtoLayer("./src/my.csv", vectorSource2).then(() => {
   }
 });
 
-// --- Обработчики переключателей ---
+// --- Обработчики ---
 if (layersForm) {
   layersForm.addEventListener("change", () => {
     const selected = layersForm.querySelector('input[name="showLayer"]:checked').value;
@@ -251,36 +202,23 @@ if (tableToggleForm) {
     updateTableVisibility();
   });
 }
-
-// --- Фильтр по названию ---
 if (filterInput) {
   filterInput.value = window.currentFilter;
   filterInput.addEventListener("input", () => {
     window.currentFilter = filterInput.value;
     saveFilter(window.currentFilter);
     const idx = getActiveLayerIndex();
-    let source;
-    if (idx === 1) {
-      source = vectorSource1;
-      vectorLayer1.changed();
-    } else if (idx === 2) {
-      source = vectorSource2;
-      vectorLayer2.changed();
-    } else {
-      source = vectorSource3;
-      vectorLayer3.changed();
-    }
+    const source = layersConfig[idx].source;
+    layersConfig[idx].vectorLayer.changed();
     renderObjectsTable(source, window.currentFilter, getActiveLayerIndex);
   });
 }
 
-// --- Функция приближения к объекту из таблицы ---
+// --- Приближение к объекту из таблицы ---
 window.zoomToFeature = function ({ layer, id }) {
-  let source;
-  if (layer === 1) source = vectorSource1;
-  else if (layer === 2) source = vectorSource2;
-  else if (layer === 3) source = vectorSource3;
-  else return;
+  const idx = typeof layer === "number" ? layer : parseInt(layer);
+  if (idx < 0 || idx >= layersConfig.length) return;
+  const source = layersConfig[idx].source;
   const feature = source.getFeatureById(id);
   if (!feature) {
     console.warn(`Feature with id=${id} not found in layer ${layer}`);

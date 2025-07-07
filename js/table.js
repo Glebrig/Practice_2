@@ -1,6 +1,6 @@
 import { getFilteredFeatures } from "./filter.js";
-import { columnNamesLayer1, columnNamesLayer2, columnNamesLayer3 } from "./constants.js";
-import { vectorSource1, vectorSource2, vectorSource3 } from "./layers.js";
+import * as columnNames from "./constants.js";
+import layersConfig from "./layers.js";
 
 export function renderObjectsTable(source, currentFilter, getActiveLayerIndex) {
   const container = document.getElementById("objects-table");
@@ -12,29 +12,27 @@ export function renderObjectsTable(source, currentFilter, getActiveLayerIndex) {
     return;
   }
 
-  const allProps = features.map((f) => f.getProperties());
-  let keys = Object.keys(allProps[0]).filter((k) => k !== "geometry");
-  if (source === vectorSource2) keys = keys.filter(k => k !== "name");
+  const allProps = features.map(f => f.getProperties());
+  let keys = Object.keys(allProps[0]).filter(k => k !== "geometry");
+  if (source === layersConfig[1].source) keys = keys.filter(k => k !== "name");
 
-  let columnNames;
-  if (source === vectorSource1) columnNames = columnNamesLayer1;
-  else if (source === vectorSource2) columnNames = columnNamesLayer2;
-  else if (source === vectorSource3) columnNames = columnNamesLayer3;
-  else columnNames = {};
-
-  const layerIndex = getActiveLayerIndex();
+  const layerIdx = getActiveLayerIndex();
+  const columnNamesKey = layersConfig[layerIdx].columnNamesKey;
+  const colNames = columnNames[columnNamesKey] || {};
 
   let html = '<table><thead><tr>';
-  keys.forEach((key) => {
-    const colName = columnNames[key] || key;
+  keys.forEach(key => {
+    const colName = colNames[key] || key;
     html += `<th>${colName}</th>`;
   });
   html += "<th>Действие</th></tr></thead><tbody>";
 
-  features.forEach((f) => {
-    html += `<tr data-id="${f.getId()}" data-layer="${layerIndex}">`;
-    keys.forEach((key) => (html += `<td>${f.get(key) ?? ""}</td>`));
-    html += `<td><button class="table" onclick="window.zoomToFeature({layer: ${layerIndex}, id: '${f.getId()}'})">Показать</button></td>`;
+  features.forEach(f => {
+    html += `<tr data-id="${f.getId()}" data-layer="${layerIdx}">`;
+    keys.forEach(key => {
+      html += `<td>${f.get(key) ?? ""}</td>`;
+    });
+    html += `<td><button class="table" onclick="window.zoomToFeature({layer: ${layerIdx}, id: '${f.getId()}'})">Показать</button></td>`;
     html += "</tr>";
   });
 

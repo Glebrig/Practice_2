@@ -1,11 +1,11 @@
-import { vectorSource2 } from "./layers.js";
+import layersConfig from "./layers.js";
 
 export function getFilteredFeatures(source, currentFilter) {
   const features = source.getFeatures();
   if (!currentFilter) return features;
   const filterText = currentFilter.trim().toLowerCase();
   let searchFields = [];
-  if (source === vectorSource2) {
+  if (source === layersConfig[1].source) {
     searchFields = ["Название_ru", "Name_en"];
   } else {
     searchFields = ["name"];

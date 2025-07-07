@@ -4,7 +4,7 @@ import TileLayer from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
 import Overlay from "ol/Overlay";
 import { fromLonLat } from "ol/proj";
-import { vectorLayer1, vectorLayer2, vectorLayer3 } from "./layers.js";
+import layersConfig from "./layers.js";
 import { loadView } from "./storage.js";
 
 const { center, zoom } = loadView();
@@ -15,9 +15,7 @@ export const map = new Map({
   target: "map",
   layers: [
     new TileLayer({ source: new OSM() }),
-    vectorLayer1,
-    vectorLayer2,
-    vectorLayer3,
+    ...layersConfig.map(l => l.vectorLayer)
   ],
   view: new View({ center: initialCenter, zoom: initialZoom }),
 });
