@@ -43,7 +43,7 @@ map.getView().on('change:resolution', () => {
 });
 
 // --- Функция загрузки CSV ---
-async function loadCSVtoLayer(url, source) {
+async function loadCSVtoLayer(url, source, layer) {
   const res = await fetch(url);
   const text = await res.text();
   const lines = text.trim().split("\n");
@@ -64,6 +64,9 @@ async function loadCSVtoLayer(url, source) {
     feature.setId(obj.id || `${lat},${lon}`);
     feature.setProperties(obj);
     source.addFeature(feature);
+  }
+  if (layer.clusterSource) {
+    layer.clusterSource.setSource(source);
   }
 }
 
@@ -165,7 +168,7 @@ export function showTableAndRender(layerIdx, filter) {
 }
 
 // --- Инициализация ---
-loadCSVtoLayer("./src/my.csv", layersConfig[1].source).then(() => {
+loadCSVtoLayer("./src/my.csv", layersConfig[1].source, layersConfig[1]).then(() => {
   const savedLayer = loadSelectedLayer();
   const initialLayerId = (savedLayer && layersConfig.some(l => l.id === savedLayer)) ? savedLayer : layersConfig[layersConfig.length - 1].id;
   const radio = layersForm.querySelector(`input[name="showLayer"][value="${initialLayerId}"]`);

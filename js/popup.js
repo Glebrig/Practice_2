@@ -10,7 +10,11 @@ export function updatePopupContent(shouldShowCoords) {
   const coordinate = overlay.getPosition();
   let featureAtPos = null;
   map.forEachFeatureAtPixel(map.getPixelFromCoordinate(coordinate), (feature) => {
-    featureAtPos = feature;
+    const features = feature.get('features');
+    if (features && features.length > 1) {
+      return false;
+    }
+    featureAtPos = features ? features[0] : feature;
     return true;
   });
 
@@ -35,13 +39,20 @@ export function updatePopupContent(shouldShowCoords) {
 export function handleMapClick(shouldShowCoords) {
   const popup = document.getElementById("popup");
   const popupContent = document.getElementById("popup-content");
+
   map.on("click", (event) => {
     let featureFound = false;
+
     map.forEachFeatureAtPixel(event.pixel, (feature) => {
+      const features = feature.get('features');
+      if (features && features.length > 1) {
+        return false;
+      }
       featureFound = true;
-      const geometry = feature.getGeometry();
+      const singleFeature = features ? features[0] : feature;
+      const geometry = singleFeature.getGeometry();
       const coord = geometry.getCoordinates();
-      const props = feature.getProperties();
+      const props = singleFeature.getProperties();
       let html = `<b>${props["Название_ru"] || props["Name_en"] || props.name || "Маркер"}</b><br>${props.description || ""}`;
       if (shouldShowCoords()) html += `<br><small>${createStringXY(6)(toLonLat(coord))}</small>`;
       popupContent.innerHTML = html;
